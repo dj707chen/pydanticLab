@@ -1,7 +1,7 @@
 # https://pydantic.dev/docs/validation/2.8/concepts/validators/#annotated-validators
 
-from typing import Any, List
-from typing_extensions import Annotated
+from typing import Any, List, Annotated
+
 from pydantic import BaseModel, ValidationError
 from pydantic.functional_validators import AfterValidator
 
