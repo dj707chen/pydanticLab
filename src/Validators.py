@@ -3,7 +3,11 @@
 from typing import Any, List, Annotated
 
 from pydantic import BaseModel, ValidationError
-from pydantic.functional_validators import AfterValidator
+from pydantic.functional_validators import BeforeValidator, AfterValidator
+
+def before_validate(v: int) -> int:
+    print(f'Before validation: {v}')
+    return v
 
 def check_squares(v: int) -> int:
     assert v**0.5 % 1 == 0, f'{v} is not a square number'
@@ -12,7 +16,12 @@ def check_squares(v: int) -> int:
 def double(v: Any) -> Any:
     return v * 2
 
-MyNumber = Annotated[int, AfterValidator(double), AfterValidator(check_squares)]
+MyNumber = Annotated[int,
+                     BeforeValidator(lambda x: (x, print(f'Before validation in lambda: {x}'))[0]),
+                     BeforeValidator(before_validate),
+                     AfterValidator(double),
+                     AfterValidator(check_squares),
+                     ]
 
 class DemoModel(BaseModel):
     number: List[MyNumber]
