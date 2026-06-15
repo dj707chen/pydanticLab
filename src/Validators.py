@@ -31,7 +31,8 @@ MyNumber = Annotated[int,
 #   → Pydantic int coercion              ← core step in between
 #   → AfterValidator(double)             [line 23]
 #   → AfterValidator(check_squares)      [line 24]
-# The output of the last BeforeValidator feeds into Pydantic's core validator, and the output of that feeds into the first AfterValidator.
+# The output of each BeforeValidator feeds into the next BeforeValidator, and the output of the last BeforeValidator feeds into Pydantic's core validation.
+# The output of Pydantic's core validation feeds into the first AfterValidator, and the output of each AfterValidator feeds into the next AfterValidator.
 
 class DemoModel(BaseModel):
     number: List[MyNumber]
