@@ -16,12 +16,22 @@ def check_squares(v: int) -> int:
 def double(v: Any) -> Any:
     return v * 2
 
+# In Pydantic v2, BeforeValidators in Annotated run right-to-left (innermost first), and AfterValidators run left-to-right (outermost first).
 MyNumber = Annotated[int,
                      BeforeValidator(lambda x: (x, print(f'Before validation in lambda: {x}'))[0]),
                      BeforeValidator(before_validate),
                      AfterValidator(double),
                      AfterValidator(check_squares),
                      ]
+# Between the last BeforeValidator and the first AfterValidator, Pydantic's core validation runs (type coercion to int in this case).
+# So the chain is:
+# raw input
+#   → BeforeValidator(before_validate)   [line 22]
+#   → BeforeValidator(lambda)            [line 21]
+#   → Pydantic int coercion              ← core step in between
+#   → AfterValidator(double)             [line 23]
+#   → AfterValidator(check_squares)      [line 24]
+# The output of the last BeforeValidator feeds into Pydantic's core validator, and the output of that feeds into the first AfterValidator.
 
 class DemoModel(BaseModel):
     number: List[MyNumber]
